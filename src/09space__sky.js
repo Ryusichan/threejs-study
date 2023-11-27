@@ -10,11 +10,15 @@ if (WEBGL.isWebGLAvailable()) {
   // scene
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(FloorColor)
+
+  const axesHelper = new THREE.AxesHelper(5)
+  scene.add(axesHelper)
+
   // 안개 추가
   // fog 거리 조절
   // scene.fog = new THREE.Fog(FogColor, 0.5, 8)
   // fog밀도 조절
-  scene.fog = new THREE.FogExp2(FogColor, 0.4)
+  // scene.fog = new THREE.FogExp2(FogColor, 0.4)
 
   // camera
   // 화각  -- 시야각(object가 보이는 각도)
@@ -44,50 +48,27 @@ if (WEBGL.isWebGLAvailable()) {
   document.body.appendChild(renderer.domElement)
 
   // 그림자 사용하겟다
-  renderer.shadowMap.enabled = true
+  // renderer.shadowMap.enabled = true
 
   // orbitControls 추가
   const controls = new OrbitControls(camera, renderer.domElement)
   // 줌인줌아웃 제한
-  controls.minDistance = 2
-  controls.maxDistance = 5
+  controls.minDistance = 20
+  controls.maxDistance = 500
 
   // 최대각 조절
-  controls.maxPolarAngle = Math.PI / 2.2
-  controls.update()
+  // controls.maxPolarAngle = Math.PI / 2.2
+  // controls.update()
 
   // 빛
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
   scene.add(ambientLight)
   // ambientLight.castShadow = true // 그림자 X
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5)
-  // 빛 방향 조절 그림자 길이 차이
-  directionalLight.position.set(-1.5, 2.5, 5.5)
-  scene.add(directionalLight)
-  const dlHelper = new THREE.DirectionalLightHelper(
-    directionalLight,
-    0.2,
-    0x0000ff
-  )
-  scene.add(dlHelper)
-  directionalLight.castShadow = true // 그림자 O
-  // 그림자 해상도 조절
-  // directionalLight.shadow.mapSize.width = 1024
-  // directionalLight.shadow.mapSize.height = 1024
-  // 그림자 블러처리
-  directionalLight.shadow.radius = 8
-
-  //여러 빛방향에서 그림자를 받을 수 있게
-  // const pointLight = new THREE.PointLight(0xffffff, 0.5)
-  // pointLight.position.set(-1, 1, 0.5)
-  // scene.add(pointLight)
-  // pointLight.castShadow = true // 그림자 O
-
   // rectLight
-  const rectLight = new THREE.RectAreaLight(0xffffff, 6, 1, 0.5)
-  rectLight.position.set(0.5, 1, 1)
-  rectLight.lookAt(0, 0, 0)
+  // const rectLight = new THREE.RectAreaLight(0xffffff, 6, 1, 0.5)
+  // rectLight.position.set(0.5, 1, 1)
+  // rectLight.lookAt(0, 0, 0)
   // scene.add(rectLight)
   // rectLight.castShadow = true // 그림자 X
 
@@ -98,58 +79,63 @@ if (WEBGL.isWebGLAvailable()) {
   // scene.add(spotLight)
   // spotLight.castShadow = true // 그림자 0
 
+  const skyMaterialArray = []
   // 도형 mesh
-  // const geometry = new THREE.SphereGeometry(0.5, 32, 16)
-  const geometry = new THREE.IcosahedronGeometry(0.5, 0)
-  // const geometry = new THREE.ConeGeometry(0.5, 1, 32)
-  const material = new THREE.MeshStandardMaterial({
-    color: objColor,
-  })
 
-  const geometry2 = new THREE.BoxGeometry(0.5, 0.5, 0.5)
-  const material2 = new THREE.MeshStandardMaterial({
-    color: objColor,
-  })
+  const textureFT = new THREE.TextureLoader().load(
+    '../static/textures/space/humble_ft.jpg'
+  )
 
-  // 그림자 생성
-  const cube = new THREE.Mesh(geometry, material)
-  cube.rotation.x = 0.5
-  cube.position.y = 0.5
-  scene.add(cube)
-  cube.castShadow = true
-  // 물체에도 그림자 생성되게 처리
-  cube.receiveShadow = true
+  const textureBK = new THREE.TextureLoader().load(
+    '../static/textures/space/humble_bk.jpg'
+  )
+  const textureUP = new THREE.TextureLoader().load(
+    '../static/textures/space/humble_up.jpg'
+  )
 
-  const cube2 = new THREE.Mesh(geometry2, material2)
-  cube2.position.set(-0.3, 1.4, 1.5)
-  scene.add(cube2)
-  cube2.castShadow = true
+  const textureDN = new THREE.TextureLoader().load(
+    '../static/textures/space/humble_dn.jpg'
+  )
+
+  const textureRT = new THREE.TextureLoader().load(
+    '../static/textures/space/humble_rt.jpg'
+  )
+
+  const textureLF = new THREE.TextureLoader().load(
+    '../static/textures/space/humble_lf.jpg'
+  )
+
+  skyMaterialArray.push(new THREE.MeshStandardMaterial({ map: textureFT }))
+  skyMaterialArray.push(new THREE.MeshStandardMaterial({ map: textureBK }))
+  skyMaterialArray.push(new THREE.MeshStandardMaterial({ map: textureUP }))
+  skyMaterialArray.push(new THREE.MeshStandardMaterial({ map: textureDN }))
+  skyMaterialArray.push(new THREE.MeshStandardMaterial({ map: textureRT }))
+  skyMaterialArray.push(new THREE.MeshStandardMaterial({ map: textureLF }))
+
+  for (let i = 0; i < 6; i++) {
+    skyMaterialArray[i].side = THREE.BackSide
+  }
+
+  const skyGeometry = new THREE.BoxGeometry(1400, 1400, 1400)
+  // const skyMaterial = new THREE.MeshBasicMaterial({
+  // color: 0xffffff,
+  //   map: textureBK,
+  // })
+  // skyMaterial.side = THREE.BackSide
+
+  const sky = new THREE.Mesh(skyGeometry, skyMaterialArray)
+  scene.add(sky)
 
   // const obj01 = new THREE.Mesh(geometry, material)
   // obj01.position.x = 0
 
   // 바닥 추가
 
-  const planeGeometry = new THREE.PlaneGeometry(20, 20, 1, 1)
-  const planeMaterial = new THREE.MeshStandardMaterial({
-    color: objColor,
-  })
-  const plane = new THREE.Mesh(planeGeometry, planeMaterial)
-  plane.rotation.x = -0.5 * Math.PI
-  plane.position.y = -0.3
-  scene.add(plane)
-  // 그림자를 받는 면을 만들어줌
-  plane.receiveShadow = true
-
   function animate() {
     requestAnimationFrame(animate)
 
     // required if controls.enableDamping or controls.autoRotate are set to true
     controls.update()
-
-    cube.rotation.y += 0.01
-    cube2.rotation.x += 0.01
-    cube2.rotation.y += 0.01
 
     renderer.render(scene, camera)
   }
@@ -164,7 +150,7 @@ if (WEBGL.isWebGLAvailable()) {
     renderer.setSize(window.innerWidth, window.innerHeight)
   })
 
-  requestAnimationFrame(render)
+  // requestAnimationFrame(render)
 } else {
   var warning = WEBGL.getWebGLErrorMessage()
   document.body.appendChild(warning)
