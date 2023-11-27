@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { WEBGL } from './webgl'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 if (WEBGL.isWebGLAvailable()) {
   // scene
@@ -35,6 +36,16 @@ if (WEBGL.isWebGLAvailable()) {
 
   // 그림자 사용하겟다
   renderer.shadowMap.enabled = true
+
+  // orbitControls 추가
+  const controls = new OrbitControls(camera, renderer.domElement)
+  // 줌인줌아웃 제한
+  controls.minDistance = 2
+  controls.maxDistance = 5
+
+  // 최대각 조절
+  controls.maxPolarAngle = Math.PI / 2.2
+  controls.update()
 
   // 빛
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
@@ -121,22 +132,19 @@ if (WEBGL.isWebGLAvailable()) {
   // 그림자를 받는 면을 만들어줌
   plane.receiveShadow = true
 
-  function render(time) {
-    time *= 0.0002
+  function animate() {
+    requestAnimationFrame(animate)
 
-    // scene.add(obj01)
+    // required if controls.enableDamping or controls.autoRotate are set to true
+    controls.update()
 
-    // camera
-    camera.position.z = 5
-
-    // animate
+    cube.rotation.y += 0.01
+    cube2.rotation.x += 0.01
+    cube2.rotation.y += 0.01
 
     renderer.render(scene, camera)
-
-    requestAnimationFrame(render)
-
-    // 반응형 처리
   }
+  animate()
 
   // 반응형 처리
   window.addEventListener('resize', () => {
