@@ -3,9 +3,18 @@ import { WEBGL } from './webgl'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 if (WEBGL.isWebGLAvailable()) {
+  const FogColor = 0x004fff
+  const objColor = 0xffffff
+  const FloorColor = 0x555555
+
   // scene
   const scene = new THREE.Scene()
-  scene.background = new THREE.Color(0xffffff)
+  scene.background = new THREE.Color(FloorColor)
+  // 안개 추가
+  // fog 거리 조절
+  // scene.fog = new THREE.Fog(FogColor, 0.5, 8)
+  // fog밀도 조절
+  scene.fog = new THREE.FogExp2(FogColor, 0.4)
 
   // camera
   // 화각  -- 시야각(object가 보이는 각도)
@@ -94,12 +103,12 @@ if (WEBGL.isWebGLAvailable()) {
   const geometry = new THREE.IcosahedronGeometry(0.5, 0)
   // const geometry = new THREE.ConeGeometry(0.5, 1, 32)
   const material = new THREE.MeshStandardMaterial({
-    color: 0x004fff,
+    color: objColor,
   })
 
   const geometry2 = new THREE.BoxGeometry(0.5, 0.5, 0.5)
   const material2 = new THREE.MeshStandardMaterial({
-    color: 0x004fff,
+    color: objColor,
   })
 
   // 그림자 생성
@@ -123,7 +132,7 @@ if (WEBGL.isWebGLAvailable()) {
 
   const planeGeometry = new THREE.PlaneGeometry(20, 20, 1, 1)
   const planeMaterial = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
+    color: objColor,
   })
   const plane = new THREE.Mesh(planeGeometry, planeMaterial)
   plane.rotation.x = -0.5 * Math.PI
