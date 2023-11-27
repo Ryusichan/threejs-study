@@ -2,7 +2,7 @@ const path = require('path')
 
 module.exports = {
   mode: 'production',
-  entry: './src/08spacefog.js',
+  entry: './src/09space__sky.js',
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
